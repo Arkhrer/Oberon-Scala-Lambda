@@ -73,7 +73,7 @@ expression
  : '(' expression ')'                                                                     #Brackets
  | expValue                                                                               #Value
  | name = qualifiedName                                                                   #Variable
- | name = qualifiedName '(' arguments? ')'                                                #FunctionCall
+ | exp = expression '(' arguments? ')'                                                    #FunctionApp
  | exp = expression '.' name = Id                                                         #FieldAccess
  | arrayBase = expression '[' index = expression ']'                                      #ArraySubscript
  | name = Id '^'                                                                          #PointerAccess
