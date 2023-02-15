@@ -873,7 +873,7 @@ class ParserTestSuite extends AbstractTestSuite {
       case ReturnStmt(MultExpression(left, right)) => {
         assert(left == VarExpression("n"))
 
-        assert(right == FunctionCallExpression("factorial", List(
+        assert(right == FunctionAppExpression(VarExpression("factorial"), List(
           SubExpression(VarExpression("n"), IntValue(1))
         )))
       }
@@ -882,7 +882,7 @@ class ParserTestSuite extends AbstractTestSuite {
     }
 
     assert(factorialStmt(1) == ReturnStmt(MultExpression(VarExpression("n"),
-      FunctionCallExpression("factorial", List(
+      FunctionAppExpression(VarExpression("factorial"), List(
         SubExpression(VarExpression("n"), IntValue(1)))))))
     // End of the factorial procedure verification
 
@@ -1209,7 +1209,7 @@ class ParserTestSuite extends AbstractTestSuite {
 
     assert(initStmt == forStmt.init)
     assert(condExpr == forStmt.condition)
-    assert(WriteStmt(FunctionCallExpression("squareOf", List(VarExpression("x")))) == stmts(0))
+    assert(WriteStmt(FunctionAppExpression(VarExpression("squareOf"), List(VarExpression("x")))) == stmts(0))
     assert(AssignmentStmt("x", AddExpression(VarExpression("x"), IntValue(1))) == stmts(1))
   }
 
@@ -1355,7 +1355,7 @@ class ParserTestSuite extends AbstractTestSuite {
 
     assert(stmt.stmts.head == ReadIntStmt("x"))
     assert(stmt.stmts(1) == ReadIntStmt("y"))
-    assert(stmt.stmts(2) == WriteStmt(FunctionCallExpression("sum", List(VarExpression("x"), VarExpression("y")))))
+    assert(stmt.stmts(2) == WriteStmt(FunctionAppExpression(VarExpression("sum"), List(VarExpression("x"), VarExpression("y")))))
   }
 
   test("Testing the oberon procedure02 code. This module resembles the code of the LDTA challenge") {
@@ -1407,11 +1407,11 @@ class ParserTestSuite extends AbstractTestSuite {
     assert(stmts.size == 2)
 
     assert(stmts.head == IfElseStmt(EQExpression(VarExpression("i"), IntValue(1)), ReturnStmt(IntValue(1)), None))
-    assert(stmts(1) == ReturnStmt(MultExpression(VarExpression("i"), FunctionCallExpression("factorial", List(SubExpression(VarExpression("i"), IntValue(1)))))))
+    assert(stmts(1) == ReturnStmt(MultExpression(VarExpression("i"), FunctionAppExpression(VarExpression("factorial"), List(SubExpression(VarExpression("i"), IntValue(1)))))))
 
     module.stmt.get match {
       case SequenceStmt(ss) => {
-        assert(ss.head == AssignmentStmt("res", FunctionCallExpression("factorial", List(IntValue(5)))))
+        assert(ss.head == AssignmentStmt("res", FunctionAppExpression(VarExpression("factorial"), List(IntValue(5)))))
         assert(ss(1) == WriteStmt(VarExpression("res")))
       }
       case _ => fail("expecting a sequence of stmts: an assignment and a print stmt (Write)")
@@ -2042,11 +2042,10 @@ class ParserTestSuite extends AbstractTestSuite {
     assert(exp6 == REPLExpression(LTExpression(VarExpression("x"), VarExpression("y"))))
   }
 
-  test("Testing the parser for FunctionCallExpression expression") {
-    val procedure1 = "sum(x,y)"
+  test("Testing the parser for FunctionCallExpression expression") { val procedure1 = "sum(x,y)"
 
     val exp1 = ScalaParser.parserREPL(procedure1)
-    assert(exp1 == REPLExpression(FunctionCallExpression("sum",List(VarExpression("x"),VarExpression("y")))))
+    assert(exp1 == REPLExpression(FunctionAppExpression(VarExpression("sum"),List(VarExpression("x"),VarExpression("y")))))
   }
 
   test("Testing the parser for assignment statements") {
@@ -2083,7 +2082,7 @@ class ParserTestSuite extends AbstractTestSuite {
     assert(stmt2 == REPLStatement(WriteStmt(AddExpression(IntValue(2),VarExpression("a")))))
 
     val stmt3 = ScalaParser.parserREPL(write3)
-    assert(stmt3 == REPLStatement(WriteStmt(FunctionCallExpression("sum",List(VarExpression("x"),VarExpression("y"))))))
+    assert(stmt3 == REPLStatement(WriteStmt(FunctionAppExpression(VarExpression("sum"),List(VarExpression("x"),VarExpression("y"))))))
   }
 
   test("Testing the parser for IfElseStmt and IfElseIfStmt statements") {
