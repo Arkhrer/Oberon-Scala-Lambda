@@ -400,16 +400,29 @@ class ParserVisitor {
       ctx.expression().accept(this)
     }
 
-    override def visitFunctionCall(ctx: OberonParser.FunctionCallContext): Unit = {
-      val name = ctx.name.getText
+    override def visitFunctionApp(ctx: OberonParser.FunctionAppContext): Unit = {
+      ctx.exp.accept(this)
+      val called_expression = exp
       val args = new ListBuffer[Expression]
+
 
       ctx.arguments().expression().forEach(e => {
         e.accept(this)
         args += exp
       })
-      exp = FunctionCallExpression(name, args.toList)
+
+      exp = FunctionAppExpression(called_expression, args.toList)
     }
+    //override def visitFunctionCall(ctx: OberonParser.FunctionCallContext): Unit = {
+      //val name = ctx.name.getText
+      //val args = new ListBuffer[Expression]
+
+      //ctx.arguments().expression().forEach(e => {
+        //e.accept(this)
+        //args += exp
+      //})
+      //exp = FunctionCallExpression(name, args.toList)
+    //}
 
     override def visitNotExpression(ctx: OberonParser.NotExpressionContext): Unit = {
       ctx.exp.accept(this)

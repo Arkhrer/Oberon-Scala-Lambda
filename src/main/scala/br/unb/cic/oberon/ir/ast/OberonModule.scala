@@ -171,6 +171,7 @@ case class FieldAccessExpression(exp: Expression, name: String) extends Expressi
 case class PointerAccessExpression(name: String) extends Expression
 case class VarExpression(name: String) extends Expression
 case class FunctionCallExpression(name: String, args: List[Expression]) extends Expression
+case class FunctionAppExpression(exp: Expression, args: List[Expression]) extends Expression
 case class EQExpression(left:  Expression, right: Expression) extends Expression
 case class NEQExpression(left:  Expression, right: Expression) extends Expression
 case class GTExpression(left:  Expression, right: Expression) extends Expression
