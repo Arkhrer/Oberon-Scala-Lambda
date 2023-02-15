@@ -1009,7 +1009,7 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
       )
     )
 
-    val stmt = WriteStmt(FunctionCallExpression("proc", Nil))
+    val stmt = WriteStmt(FunctionAppExpression(VarExpression("proc"), Nil))
 
     val typeCheckerErrors = stmt.accept(visitor)
 
@@ -1039,7 +1039,7 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
 
     val stmt = AssignmentStmt(
       "x",
-      FunctionCallExpression("proc", List(IntValue(5), BoolValue(true)))
+      FunctionAppExpression(VarExpression("proc"), List(IntValue(5), BoolValue(true)))
     )
 
     val typeCheckerErrors = stmt.accept(visitor)
@@ -1061,7 +1061,7 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
     )
 
     val stmt = WriteStmt(
-      FunctionCallExpression("proc", List(IntValue(5)))
+      FunctionAppExpression(VarExpression("proc"), List(IntValue(5)))
     )
 
     val typeCheckerErrors = stmt.accept(visitor)
@@ -1085,7 +1085,7 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
 
     val stmt = AssignmentStmt(
       "s",
-      FunctionCallExpression("proc", Nil)
+      FunctionAppExpression(VarExpression("proc"), Nil)
     )
 
     val typeCheckerErrors = stmt.accept(visitor)
@@ -1116,7 +1116,7 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
 
     val stmt = AssignmentStmt(
       "x",
-      FunctionCallExpression("proc", List(IntValue(5), IntValue(0)))
+      FunctionAppExpression(VarExpression("proc"), List(IntValue(5), IntValue(0)))
     )
 
     val typeCheckerErrors = stmt.accept(visitor)
@@ -1147,7 +1147,7 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
 
     val stmt = AssignmentStmt(
       "x",
-      FunctionCallExpression("proc", List(IntValue(0)))
+      FunctionAppExpression(VarExpression("proc"), List(IntValue(0)))
     )
 
     val typeCheckerErrors = stmt.accept(visitor)
@@ -1178,7 +1178,7 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
 
     val stmt = AssignmentStmt(
       "x",
-      FunctionCallExpression("proc", List(IntValue(5), VarExpression("404")))
+      FunctionAppExpression(VarExpression("proc"), List(IntValue(5), VarExpression("404")))
     )
 
     val typeCheckerErrors = stmt.accept(visitor)
@@ -1465,7 +1465,6 @@ class TypeCheckerTestSuite  extends AbstractTestSuite {
     val res = module.accept(visitor)
 
     assert(res.size == 1)
-    print(res, "\n")
     val msg = res.head._2
     assert(msg.contains("Wrong return type"))
   }

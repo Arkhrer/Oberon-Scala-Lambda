@@ -48,32 +48,16 @@ class ExpressionTypeVisitor(val typeChecker: TypeChecker) extends OberonVisitorA
       computeBinExpressionType(left, right, List(BooleanType), BooleanType)
     case OrExpression(left, right) =>
       computeBinExpressionType(left, right, List(BooleanType), BooleanType)
-    case FunctionCallExpression(name, args) => {
-      try  {
-        val procedure = typeChecker.env.findProcedure(name)
-        
-        if(args.length != procedure.args.length) {
-          return None
+    case FunctionAppExpression(called_expression, args) => {
+      called_expression match {
+        case VarExpression(name) => {
+          //None
+          functionCallExpressionCheck(name, args)
         }
-
-        val givenArgumentTypes = args.map(_.accept(this))
-        val neededArgumentTypes = procedure.args.map(_.argumentType)
-
-        val areArgTypesWrong = givenArgumentTypes.zip(neededArgumentTypes).map({
-          case (Some(givenType), neededType) if givenType == neededType =>
-            Some(givenType)
-          case _ => None
-        }).contains(None)
-
-        if(areArgTypesWrong) {
-          None
-        } else {
-          Some(procedure.returnType.getOrElse(NullType))
-        }
-      } catch { 
-        case _ : NoSuchElementException => None
       }
     }
+    //case FunctionCallExpression(name, args) => functionCallExpressionCheck(name, args)
+  
     case ArrayValue(values, arrayType) =>
       if(values.isEmpty || values.forall(v => v.accept(this).get == arrayType.baseType)) {
         Some(arrayType)
@@ -100,6 +84,32 @@ class ExpressionTypeVisitor(val typeChecker: TypeChecker) extends OberonVisitorA
     }
   }
 
+  def functionCallExpressionCheck(name: String, args: List[Expression]): T = {
+      try  {
+        val procedure = typeChecker.env.findProcedure(name)
+        
+        if(args.length != procedure.args.length) {
+          return None
+        }
+
+        val givenArgumentTypes = args.map(_.accept(this))
+        val neededArgumentTypes = procedure.args.map(_.argumentType)
+
+        val areArgTypesWrong = givenArgumentTypes.zip(neededArgumentTypes).map({
+          case (Some(givenType), neededType) if givenType == neededType =>
+            Some(givenType)
+          case _ => None
+        }).contains(None)
+
+        if(areArgTypesWrong) {
+          None
+        } else {
+          Some(procedure.returnType.getOrElse(NullType))
+        }
+      } catch { 
+        case _ : NoSuchElementException => None
+      }
+  }
   def fieldAccessCheck(exp: Expression, attributeName: String): T = {
     exp.accept(this) match {
       case Some(ReferenceToUserDefinedType(userTypeName)) => {
